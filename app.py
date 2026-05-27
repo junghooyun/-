@@ -1,6 +1,6 @@
 import streamlit as st
-from google import genai
-from google.genai import types
+from google import gemini
+from google.gemini import types
 
 # -----------------------------
 # 페이지 설정
