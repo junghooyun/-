@@ -1,5 +1,4 @@
-import streamlit as st
-from google import gemini
+import google.generativeai as genai
 from google.gemini import types
 
 # -----------------------------
