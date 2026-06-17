@@ -152,10 +152,29 @@ st.divider()
 # AI 고민 상담
 # ------------------------
 
-st.header("🔍 AI 고민 상담")
+st.header("🧑‍🏫 상담사 아저씨와 이야기하기")
+
+st.image(
+    "counselor.png",
+    width=200,
+    caption="마음 성장 연구소 상담사"
+)
+
+st.info(
+    """
+안녕!
+
+나는 마음 성장 연구소의 상담사야 😊
+
+외모 때문에 속상하거나 고민되는 일이 있으면
+편하게 이야기해 줘.
+
+함께 생각해 보자!
+"""
+)
 
 user_worry = st.text_area(
-    "외모와 관련된 고민을 자유롭게 적어보세요."
+    "고민을 적어보세요."
 )
 
 if st.button("상담 받기"):
@@ -164,21 +183,11 @@ if st.button("상담 받기"):
         st.warning("고민을 입력해주세요.")
 
     else:
+        with st.spinner("상담사 아저씨가 생각 중입니다..."):
 
-        if genai is None:
-            st.error(
-                "google-genai 라이브러리가 설치되지 않았습니다."
-            )
+            answer = ask_gemini(user_worry)
 
-        else:
-
-            with st.spinner("생각 중..."):
-
-                answer = ask_gemini(user_worry)
-
-            st.success(answer)
-
-st.divider()
+        st.chat_message("assistant").write(answer)
 
 # ------------------------
 # 응원 편지
