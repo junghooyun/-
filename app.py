@@ -1,135 +1,219 @@
 import streamlit as st
+from google import genai
+
+# -----------------------------
+# 기본 설정
+# -----------------------------
 
 st.set_page_config(
-    page_title="Style Mentor",
+    page_title="Style Mentor AI",
     page_icon="🎩",
     layout="wide"
 )
 
-st.markdown("""
+
+# -----------------------------
+# 디자인
+# -----------------------------
+
+st.markdown(
+    """
 <style>
-.main-title{
+
+.title {
     text-align:center;
-    font-size:3rem;
-    font-weight:700;
-    color:#222;
+    font-size:45px;
+    font-weight:bold;
 }
-.sub-title{
+
+.subtitle {
     text-align:center;
     color:#666;
-    margin-bottom:20px;
 }
-.card{
+
+.box {
+    background:#f5f5f5;
     padding:20px;
     border-radius:15px;
-    background-color:#f7f7f7;
-    border:1px solid #e5e5e5;
 }
-.tip{
-    padding:15px;
-    border-radius:10px;
-    background:#eef8ff;
-    border-left:5px solid #2196F3;
-}
+
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True
+)
+
 
 st.markdown(
-    '<div class="main-title">🎩 Style Mentor</div>',
+    "<div class='title'>🎩 Style Mentor AI</div>",
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '<div class="sub-title">패션 디자이너 아저씨와 함께하는 스타일 가이드</div>',
+    "<div class='subtitle'>콧수염 패션 디자이너 AI 아저씨의 스타일 상담</div>",
     unsafe_allow_html=True
 )
 
-col1, col2 = st.columns([1, 2])
+
+# -----------------------------
+# 캐릭터
+# -----------------------------
+
+col1, col2 = st.columns(2)
+
 
 with col1:
+
     st.image(
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600",
-        use_container_width=True
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        width=300
     )
 
+
 with col2:
+
     st.markdown(
         """
-        <div class="card">
-        <h3>👨‍🎨 패션 디자이너 아저씨</h3>
-        <p>
-        안녕하세요! 저는 스타일 멘토입니다.
-        사람의 가치를 외모로 평가하지 않고,
-        자신에게 어울리는 패션과 자기관리를 찾도록 도와드립니다.
-        </p>
-        </div>
-        """,
+<div class="box">
+
+👨‍🎨 안녕하세요!
+
+저는 Style Mentor AI입니다.
+
+외모를 평가하지 않고,
+나에게 어울리는 패션,
+헤어스타일,
+생활 습관을 함께 찾아드립니다.
+
+</div>
+""",
         unsafe_allow_html=True
     )
 
+
+
 st.divider()
 
+
+
+# -----------------------------
+# Gemini 연결
+# -----------------------------
+
+def ask_ai(message):
+
+    try:
+
+        api_key = st.secrets["GEMINI_API_KEY"]
+
+        client = genai.Client(
+            api_key=api_key
+        )
+
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=f"""
+너는 친절한 패션 디자이너 아저씨 AI이다.
+
+대상:
+사춘기 청소년
+
+역할:
+- 패션
+- 헤어스타일
+- 자기관리
+- 자신감 향상
+
+에 대해 조언한다.
+
+주의:
+외모 평가 금지.
+외모 점수 금지.
+비교 금지.
+
+사용자 고민:
+{message}
+
+따뜻하고 구체적으로 답변해줘.
+"""
+        )
+
+
+        return response.text
+
+
+    except Exception as e:
+
+        return (
+            "AI 연결 중 문제가 발생했습니다.\n\n"
+            "잠시 후 다시 시도해주세요.\n\n"
+            f"오류 정보: {str(e)}"
+        )
+
+
+
+# -----------------------------
+# 사용자 입력
+# -----------------------------
+
+
 category = st.selectbox(
-    "관심 분야를 선택하세요",
+    "상담 분야",
     [
         "패션",
         "헤어스타일",
         "피부관리",
-        "자신감"
+        "자신감",
+        "전체 상담"
     ]
 )
 
+
 question = st.text_area(
-    "고민이나 궁금한 점을 입력하세요",
-    placeholder="예: 교복에 어울리는 스타일이 궁금해요."
+    "고민을 입력하세요",
+    placeholder="예: 친구들에게 잘 어울리는 옷 스타일이 궁금해요."
 )
 
-tips = {
-    "패션": """
-• 기본 색상 위주로 코디하면 실패가 적습니다.
-• 편안함과 활동성을 우선으로 생각하세요.
-• 유행보다 자신의 취향을 찾는 것이 중요합니다.
-""",
-    "헤어스타일": """
-• 깔끔한 관리만으로도 좋은 인상을 줄 수 있습니다.
-• 관리하기 쉬운 스타일을 선택하세요.
-• 정기적인 손질이 중요합니다.
-""",
-    "피부관리": """
-• 충분한 수면과 수분 섭취가 중요합니다.
-• 세안은 너무 자주 하지 않는 것이 좋습니다.
-• 피부 고민이 심하면 전문가 상담을 고려하세요.
-""",
-    "자신감": """
-• 외모는 사람의 일부일 뿐 전부가 아닙니다.
-• 자신의 장점을 찾고 발전시키세요.
-• 비교보다 성장에 집중하는 것이 좋습니다.
-"""
-}
 
-if st.button("조언 받기"):
-    if not question.strip():
-        st.warning("고민을 입력해주세요.")
+
+if st.button("🎩 AI 디자이너에게 조언 받기"):
+
+
+    if question.strip() == "":
+
+        st.warning(
+            "고민 내용을 입력해주세요."
+        )
+
+
     else:
-        st.success("스타일 멘토의 조언")
 
-        st.markdown(
-            f"""
-            <div class="tip">
-            {tips.get(category)}
-            </div>
-            """,
-            unsafe_allow_html=True
+        final_question = (
+            f"분야: {category}\n"
+            f"고민: {question}"
         )
 
-        st.write("### ✨ 추가 메시지")
-        st.write(
-            f"'{question}'에 대해 고민하고 있다면, "
-            "자신을 다른 사람과 비교하기보다 자신에게 맞는 스타일을 찾는 데 집중해 보세요."
+
+        with st.spinner(
+            "AI 디자이너가 생각 중입니다..."
+        ):
+
+            answer = ask_ai(final_question)
+
+
+
+        st.success(
+            "🎩 디자이너 아저씨의 답변"
         )
+
+
+        st.markdown(answer)
+
+
 
 st.divider()
 
+
 st.caption(
-    "Style Mentor | 교육용 자기관리 및 패션 가이드"
+    "Style Mentor AI | 긍정적인 자기관리와 스타일 조언 서비스"
 )
