@@ -45,8 +45,11 @@ st.markdown(
 # -------------------
 st.markdown("## 👨‍🎨 패션 디자이너 아저씨")
 
-st.markdown("""
-```text
+
+
+```python
+st.code(
+"""
       _________
      /         \\
     |  ◉   ◉   |
@@ -58,3 +61,6 @@ st.markdown("""
      ___|||___
     | Fashion |
     | Designer|
+""",
+language="text"
+)
